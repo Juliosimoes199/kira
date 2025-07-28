@@ -17,30 +17,28 @@ produtos = {
     "Arroz": {
         "nome": "Arroz Branco",
         "descricao": "O mais utilizado na culinária angola, com grãos polidos e textura macia.",
-        "preco": 26000.99,
         "disponibilidade": True,
         "variantes": {
             "Marcas": ["Patriota", "Bom sabor", "Dona Chepa"],  # Cores em hexadecimal
             "tamanhos": ["25kg", "10kg"]
         },
-        "envio": "2000,00 kz para toda Luanda. Entrega em 2-4 dias úteis.",
+        "envio": "Para toda Luanda. Entrega em 2-4 dias úteis.",
         "devolucao": "Aceitamos devoluções em até 7 dias."
     },
     "Leite": {
         "nome": "Leite integral",
         "descricao": "Possui teor de gordura igual a 3%, não possui lactose ideal para pessoas com intolerância à lactose.",
-        "preco": 6000,
         "disponibilidade": True,
-        "envio": "1000,00 kz para toda Luanda. Entrega em 1-2 dias úteis.",
+        "envio": "Para toda Luanda. Entrega em 1-2 dias úteis.",
         "devolucao": "Não aceitamos devoluções de produtos abertos."
     }
 }
 
 promocao = {
 
-    "Liquidificador": "Mini Liquidificador de marca elctroNova custa agora '10999.69 kz' com descontos de 10%",
-    "Fralda": "Fraldas para bebês de 6 à 12 meses de marca Mimo custa agora '12699.39 kz' com descontos de 5%",
-    "Celular": "IPhone 11 custa agora '368669.19 kz' com desconto de 18%"
+    "Liquidificador": "Mini Liquidificador de marca elctroNova com descontos de 10%",
+    "Fralda": "Fraldas para bebês de 6 à 12 meses de marca Mimo com descontos de 5%",
+    "Celular": "IPhone 11 com desconto de 18%"
 }
 
 localiza_hora = {
@@ -64,9 +62,9 @@ def agente_de_vendas(pergunta_usuario, historico_conversa, produtos_conhecimento
     start_time = time.time()
     model_vendas = genai.GenerativeModel('gemini-2.0-flash-exp')
 
-    prompt_vendas = f"""Você é um assistente de atendimento ao cliente especializado nas lojas **Kero de Angola**, com objectivoprincipal de oferecer suporte abragente e de alta qualidade nos seguintes produtos:\n\n"""
+    prompt_vendas = f"""Você é um assistente de atendimento ao cliente especializado da loja **KERO**, com objectivo principal de oferecer suporte abragente e de alta qualidade nos seguintes produtos:\n\n"""
     for nome, detalhes in produtos_conhecimento.items():
-        prompt_vendas += f"- **{detalhes['nome']}**: {detalhes['descricao']} Preço:{detalhes['preco']:.2f} kz. "
+        prompt_vendas += f"- **{detalhes['nome']}**: {detalhes['descricao']}"
         if detalhes['disponibilidade']:
             prompt_vendas += "Disponível."
         else:
@@ -75,7 +73,7 @@ def agente_de_vendas(pergunta_usuario, historico_conversa, produtos_conhecimento
             prompt_vendas += f" Variantes: Marcas: {', '.join([f'<span style="color:{cor}">●</span>' for cor in detalhes['variantes'].get('Marcas', [])])}, Tamanhos: {', '.join(detalhes['variantes'].get('tamanhos', []) )}."
         prompt_vendas += "\n"
 
-    prompt_vendas += f""" Esse são os produtos com descontos e promoção: **{promocao["Liquidificador"]}** \n **{promocao["Fralda"]}** \n**{promocao["Celular"]}**. Caso o usuário precisar de saber informações como localização e horário de atendimento das lojas Kero ou saber quais lojas estão mais próximas a ele essas são as informações da localização e horários das lojas: **{localiza_hora["loja1"]}** \n**{localiza_hora["loja2"]}**. \ntrate da melhor forma possível questões como **Reclamações**: Entenda a natureza da reclamação(produto, atendimento, instalações, etc.) informando que as reclamações foram registradas e encaminhadas a unidade responsável onde deverá receber melhor tratamento ou indique ao cliente o próximo passo, seja o encaminhamento para o departamento específico(ex: gestão de loja, controlo de qualidade) ou prazo esperado para uma resolução. \n Você deverá também apresentar outros serviços e explicar caso o cliente mostrar interesse em saber de todos os serviços que o Kero oferece, como: \n * **Cartão Kero(Fidelidade):** Benefícios, como aderir, como acumular e usar pontos/descontos. * **Pagamentos:** métodos de pagamento aceites nas lojas e online.    """
+    prompt_vendas += f""" Esse são os produtos com descontos e promoção: **{promocao["Liquidificador"]}** \n **{promocao["Fralda"]}** \n**{promocao["Celular"]}**. Caso o usuário precisar de saber informações como localização e horário de atendimento das lojas Kero ou saber quais lojas estão mais próximas a ele essas são as informações da localização e horários das lojas: **{localiza_hora["loja1"]}** \n**{localiza_hora["loja2"]}**. \ntrate da melhor forma possível questões como **Reclamações**: Entenda a natureza da reclamação(produto, atendimento, instalações, etc.) informando que as reclamações foram registradas e encaminhadas a unidade responsável onde deverá receber melhor tratamento ou indique ao cliente o próximo passo, seja o encaminhamento para o departamento específico(ex: gestão de loja, controlo de qualidade) ou prazo esperado para uma resolução. Use sempre português de Portugal e nunca de Brasil, nunca coloca dentro de parêntese '(Kero)' deixa a conversa fluida e seja o mais natural possível. Ajude nas compras sugerindos itens e promoções activas. Indique combos e kits temáticos(ex: jantar rápido, lanche, churrasco). Evita começar a tua frase com "Olá" em excesso, diga somente uma vez "Olá". \n Você deverá também apresentar outros serviços e explicar caso o cliente mostrar interesse em saber de todos os serviços que o Kero oferece, como: \n * **Cartão Kero(Fidelidade):** Benefícios, como aderir, como acumular e usar pontos/descontos. * **Pagamentos:** métodos de pagamento aceites nas lojas e online.    """
 
     # Adiciona o histórico da conversa ao prompt
     prompt_vendas += "\nHistórico da Conversa:\n"
@@ -175,7 +173,7 @@ with st.sidebar:
     st.header("Detalhes dos Produtos")
     for nome, detalhes in produtos.items():
         with st.expander(f"**{detalhes['nome']}**", expanded=False):
-            st.markdown(f"<p class='sidebar-item'>Preço: {detalhes['preco']:.2f} kz</p>", unsafe_allow_html=True)
+            #st.markdown(f"<p class='sidebar-item'>Preço: {detalhes['preco']:.2f} kz</p>", unsafe_allow_html=True)
             st.markdown(f"<p class='sidebar-item'>Disponibilidade: {'<span style=\"color:green\">✅ Disponível</span>' if detalhes['disponibilidade'] else '<span style=\"color:red\">❌ Indisponível</span>'}</p>", unsafe_allow_html=True)
             if "variantes" in detalhes:
                 if "cores" in detalhes['variantes']:
